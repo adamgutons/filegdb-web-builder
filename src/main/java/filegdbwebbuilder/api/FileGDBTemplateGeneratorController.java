@@ -1,12 +1,10 @@
 package filegdbwebbuilder.api;
 
 import filegdbwebbuilder.entities.FileGDBTemplate;
-import filegdbwebbuilder.entities.LayerField;
+import filegdbwebbuilder.entities.FileGDBTemplateResult;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping(path = "/api/filegdb", produces = "application/json")
@@ -14,15 +12,12 @@ import java.util.List;
 @RequiredArgsConstructor
 public class FileGDBTemplateGeneratorController {
 
-    @GetMapping(params = "recent")
-    public List<LayerField> test() {
-        return List.of(LayerField.builder().name("test").build());
-    }
+    private final FileGDBTemplateGeneratorService fileGDBTemplateGeneratorService;
 
     @PostMapping(consumes = "application/json")
     @ResponseStatus(HttpStatus.CREATED)
-    public FileGDBTemplate postTemplateConfig(final @RequestBody FileGDBTemplate fileGDBTemplate) {
-        return fileGDBTemplate;
+    public FileGDBTemplateResult generateTemplateConfiguration(final @RequestBody FileGDBTemplate fileGDBTemplateConfiguration) {
+        return fileGDBTemplateGeneratorService.generateFileGDBTemplate(fileGDBTemplateConfiguration);
     }
 
 }
