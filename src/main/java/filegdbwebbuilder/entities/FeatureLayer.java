@@ -1,4 +1,4 @@
-package entities;
+package filegdbwebbuilder.entities;
 
 import lombok.Builder;
 import lombok.Data;
@@ -14,7 +14,5 @@ public class FeatureLayer {
     private List<LayerField> layerFields;
 
     private Integer geometryType;
-
-    private String spatialReferenceCode;
 
 }
