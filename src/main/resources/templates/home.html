@@ -1,11 +1,19 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
-  <title>File Geodatabase Builder</title>
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+  <script type="text/javascript" src="/js/src/homeFunctions.js"></script>
 </head>
-
 <body>
-<h1>Welcome to...</h1>
+<form th:action="@{/submit}" method="post" id="layerForm">
+  <div>
+    <label for="layerName">Layer Name: </label>
+    <input type="text" name="layerName"/>
+    <br/>
+  </div>
+  <button type="button" onclick="addLayer(42)">Add Layer</button>
+  <button type="submit">Submit</button>
+</form>
+
 </body>
 </html>
