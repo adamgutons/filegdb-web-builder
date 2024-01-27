@@ -25,8 +25,8 @@ class FileGDBTemplateGeneratorServiceTests {
         when(fileGDBTemplateGeneratorService.generateFileGDBTemplate(fileGDBTemplate))
                 .thenReturn(FileGDBTemplateResult.builder().build());
 
-        final FileGDBTemplateResult fileGDBTemplateResult = fileGDBTemplateGeneratorService.generateFileGDBTemplate(fileGDBTemplate);
-        assertThat(fileGDBTemplateResult).isInstanceOf(FileGDBTemplateResult.class);
+        assertThat(fileGDBTemplateGeneratorService.generateFileGDBTemplate(fileGDBTemplate))
+                .isInstanceOf(FileGDBTemplateResult.class);
 
     }
 
