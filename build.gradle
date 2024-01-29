@@ -38,3 +38,12 @@ tasks.named('bootBuildImage') {
 tasks.named('test') {
     useJUnitPlatform()
 }
+
+task fatJar(type: Jar) {
+    manifest {
+        attributes 'Main-Class': "filegdbwebbuilder.FilegdbWebBuilderApplication"
+    }
+    archiveBaseName.set("filegdbwebbuilder")
+    from { configurations.compileClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+}

@@ -9,7 +9,7 @@ import java.util.List;
 @Builder(toBuilder = true)
 public class FileGDBTemplate {
 
-    private static final String TEMPLATE_NAME = "template.gdb";
+    private String templateName;
 
     private List<FeatureLayer> featureLayers;
 
