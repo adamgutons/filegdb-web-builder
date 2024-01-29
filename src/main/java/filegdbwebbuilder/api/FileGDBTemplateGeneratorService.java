@@ -7,6 +7,10 @@ import org.gdal.ogr.DataSource;
 import org.gdal.ogr.ogr;
 import org.springframework.stereotype.Service;
 
+import java.nio.file.Path;
+
+import static filegdbwebbuilder.fileoutput.FileOutputUtils.createUniqueTempDirectory;
+
 @Slf4j
 @Service
 public class FileGDBTemplateGeneratorService {
@@ -18,9 +22,10 @@ public class FileGDBTemplateGeneratorService {
         ogr.RegisterAll();
         log.info("Register GDAL complete");
         final String templateName = fileGDBTemplateConfiguration.getTemplateName() + GDB_EXTENSION;
-        final DataSource fileGDBtemplateDataSource =
-                ogr.GetDriverByName(FILE_DRIVER).CreateDataSource(templateName);
-        fileGDBtemplateDataSource.delete();
+        final String outputFilePath = Path.of(createUniqueTempDirectory().toString(), templateName).toString();
+        final DataSource fileTemplateDataSource =
+                ogr.GetDriverByName(FILE_DRIVER).CreateDataSource(outputFilePath);
+        fileTemplateDataSource.delete();
         return FileGDBTemplateResult.builder().build();
     }
 
