@@ -1,7 +1,6 @@
 FROM ubuntu:22.04
 
 ARG JAR_FILE=build/libs/*.jar
-ARG TARGET_ARCH=x86_64
 
 ENV LD_LIBRARY_PATH=/gdal_install:/gdal_install/share/gdal:/gdal_install/lib:/gdal_install/share/java
 
