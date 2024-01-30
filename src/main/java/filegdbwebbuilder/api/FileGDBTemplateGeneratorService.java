@@ -15,14 +15,13 @@ import static filegdbwebbuilder.fileoutput.FileOutputUtils.createUniqueTempDirec
 @Service
 public class FileGDBTemplateGeneratorService {
 
-    private static final String GDB_EXTENSION = ".gdb";
     private static final String FILE_DRIVER = "OpenFileGDB";
+    private static final String TEMPLATE_NAME = "template.gdb";
 
     public FileGDBTemplateResult generateFileGDBTemplate(final FileGDBTemplate fileGDBTemplateConfiguration) {
         ogr.RegisterAll();
         log.info("Register GDAL complete");
-        final String templateName = fileGDBTemplateConfiguration.getTemplateName() + GDB_EXTENSION;
-        final String outputFilePath = Path.of(createUniqueTempDirectory().toString(), templateName).toString();
+        final String outputFilePath = Path.of(createUniqueTempDirectory().toString(), TEMPLATE_NAME).toString();
         final DataSource fileTemplateDataSource =
                 ogr.GetDriverByName(FILE_DRIVER).CreateDataSource(outputFilePath);
         fileTemplateDataSource.delete();
