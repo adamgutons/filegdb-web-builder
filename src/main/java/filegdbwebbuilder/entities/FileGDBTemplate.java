@@ -13,6 +13,6 @@ public class FileGDBTemplate {
 
     private List<FeatureLayer> featureLayers;
 
-    private String spatialReferenceCode;
+    private Integer spatialReferenceCode;
 
 }
