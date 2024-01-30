@@ -31,10 +31,10 @@ public class FileGDBTemplateGeneratorService {
         final DataSource fileTemplateDataSource =
                 ogr.GetDriverByName(FILE_DRIVER).CreateDataSource(outputFilePath);
         log.info("Data source created...");
+
         createOgrLayerObjects(fileGDBTemplateConfiguration, fileTemplateDataSource, createSpatialReference(fileGDBTemplateConfiguration));
         log.info("Layer objects created...");
-        createOgrFieldObjects(fileGDBTemplateConfiguration, fileTemplateDataSource);
-        log.info("Field objects created...");
+
         fileTemplateDataSource.delete();
 
         return FileGDBTemplateResult.builder().build();
@@ -56,30 +56,25 @@ public class FileGDBTemplateGeneratorService {
                                        final DataSource fileTemplateDataSource,
                                        final SpatialReference spatialReference) {
         try {
-            fileGDBTemplateConfiguration.getFeatureLayers().forEach(layerField ->
-                    fileTemplateDataSource.CreateLayer(layerField.getName(), spatialReference, layerField.getGeometryType()));
+            fileGDBTemplateConfiguration.getFeatureLayers().forEach(featureLayerConfig -> {
+                final Layer ogrLayer = fileTemplateDataSource.CreateLayer(featureLayerConfig.getName(), spatialReference,
+                        featureLayerConfig.getGeometryType());
+
+                createOgrFields(featureLayerConfig, ogrLayer);
+            });
+
         } catch (Exception e) {
             throw new FileGDBTemplateServiceException("Error when creating ogr layer objects", e);
         }
     }
 
-    private void createOgrFieldObjects(final FileGDBTemplate fileGDBTemplateConfiguration,
-                                       final DataSource fileTemplateDataSource) {
+    private void createOgrFields(final FeatureLayer featureLayerConfig,
+                                 final Layer ogrLayer) {
         try {
-            fileGDBTemplateConfiguration.getFeatureLayers()
-                    .forEach(featureLayerConfig -> createOgrField(featureLayerConfig, fileTemplateDataSource));
-        } catch (Exception e) {
-            throw new FileGDBTemplateServiceException("Error when creating ogr layer objects", e);
-        }
-    }
-
-    private void createOgrField(final FeatureLayer featureLayerConfiguration,
-                                final DataSource fileTemplateDataSource) {
-        try {
-            final Layer ogrLayer = fileTemplateDataSource.GetLayer(featureLayerConfiguration.getName());
-            featureLayerConfiguration.getLayerFields()
-                    .forEach(layerFieldConfig ->
-                            ogrLayer.CreateField(new FieldDefn(layerFieldConfig.getName(), layerFieldConfig.getType())));
+            featureLayerConfig.getLayerFields()
+                    .forEach(featureLayerFieldConfig ->
+                            ogrLayer.CreateField(new FieldDefn(featureLayerFieldConfig.getName(), featureLayerFieldConfig.getType())));
+            log.info("Field objects created...");
         } catch (Exception e) {
             throw new FileGDBTemplateServiceException("Error when creating ogr field objects", e);
         }
