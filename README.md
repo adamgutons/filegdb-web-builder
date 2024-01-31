@@ -18,14 +18,14 @@
     + ```
       {
         "name": "templateTester", -- output file template name
-        "geometryType": 1,        -- define layer geometry type
         "featureLayers": [        -- list of feature layers
           {
             "name": "test",       -- name of each layer
+            "geometryType": 1,    -- define layer geometry type
             "layerFields": [      -- list of layer fiels
                 {
-                 "name" : "testField",  -- define field name and type
-                 "type": 1
+                 "name" : "testField",  -- define field name
+                 "type": 1              -- define field type
                 }
             ]
           }
