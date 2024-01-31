@@ -12,9 +12,11 @@ import org.gdal.ogr.ogr;
 import org.gdal.osr.SpatialReference;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
 import java.nio.file.Path;
+import java.util.List;
 
-import static filegdbwebbuilder.fileoutput.FileOutputUtils.createUniqueTempDirectory;
+import static filegdbwebbuilder.fileoutput.FileOutputUtils.*;
 
 @Slf4j
 @Service
@@ -27,9 +29,9 @@ public class FileGDBTemplateGeneratorService {
 
         ogr.RegisterAll();
 
-        final String outputFilePath = Path.of(createUniqueTempDirectory().toString(), TEMPLATE_NAME).toString();
+        final Path outputFilePath = Path.of(createUniqueTempDirectory().toString(), TEMPLATE_NAME);
         final DataSource fileTemplateDataSource =
-                ogr.GetDriverByName(FILE_DRIVER).CreateDataSource(outputFilePath);
+                ogr.GetDriverByName(FILE_DRIVER).CreateDataSource(outputFilePath.toString());
         log.info("Data source created...");
 
         createOgrLayerObjects(fileGDBTemplateConfiguration, fileTemplateDataSource, createSpatialReference(fileGDBTemplateConfiguration));
@@ -37,8 +39,14 @@ public class FileGDBTemplateGeneratorService {
 
         fileTemplateDataSource.delete();
 
-        return FileGDBTemplateResult.builder().build();
-
+        try {
+            final File zippedOutputFile = zipFiles(List.of(outputFilePath.toFile()), outputFilePath.getParent(),
+                    fileGDBTemplateConfiguration.getTemplateName() + ".zip");
+            return FileGDBTemplateResult.builder()
+                    .templateBase64(encodeOutputFileTemplateToBase64(zippedOutputFile.getPath())).build();
+        } catch (Exception e) {
+            throw new FileGDBTemplateServiceException("Unable to zip template file...", e);
+        }
     }
 
     private SpatialReference createSpatialReference(final FileGDBTemplate fileGDBTemplateConfiguration) {
@@ -79,6 +87,5 @@ public class FileGDBTemplateGeneratorService {
             throw new FileGDBTemplateServiceException("Error when creating ogr field objects", e);
         }
     }
-
 
 }
