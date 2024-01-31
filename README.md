@@ -33,7 +33,9 @@
         "spatialReferenceCode": 9000  -- define spatial reference for all layers
       }
       ```
-      
+ + The response contains a base64 encoded string that represents a .zip file containing the file geodatabase template
+   + `{ "templateBase64": "UEsDBBQACAgIAIiNP1gAAAA..." }`
+   
 #### spatial references
 + As of now the spatial reference system must be defined with an official [EPSG](https://epsg.io/) code
 + The spatial reference system is currently applied to all layers in the file .gdb output per ESRI conventions
