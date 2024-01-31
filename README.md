@@ -18,6 +18,7 @@
     + ```
       {
         "name": "templateTester", -- output file template name
+        "geometryType": 1,        -- define layer geometry type
         "featureLayers": [        -- list of feature layers
           {
             "name": "test",       -- name of each layer
@@ -26,8 +27,7 @@
                  "name" : "testField",  -- define field name and type
                  "type": 1
                 }
-            ],
-            "geometryType": 1     -- define layer geometry type
+            ]
           }
         ],
         "spatialReferenceCode": 9000  -- define spatial reference for all layers
@@ -47,7 +47,7 @@
 #### field types
 + TBD
 
-#### GDAL useage
+#### GDAL build info
 + The main application dependency is [GDAL](https://gdal.org/) 3.7 which has been pre-compiled using Ubuntu 22.04 into a compact version and placed in the top
 level directory (see `gdal_install`)
 + If you wish to use your own custom GDAL build, you can use the `buildgdal.sh` script (you will need to adjust the script
