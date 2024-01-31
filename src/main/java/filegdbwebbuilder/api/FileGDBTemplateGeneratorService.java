@@ -5,6 +5,7 @@ import filegdbwebbuilder.entities.FeatureLayer;
 import filegdbwebbuilder.entities.FileGDBTemplate;
 import filegdbwebbuilder.entities.FileGDBTemplateResult;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FileUtils;
 import org.gdal.ogr.DataSource;
 import org.gdal.ogr.FieldDefn;
 import org.gdal.ogr.Layer;
@@ -13,6 +14,7 @@ import org.gdal.osr.SpatialReference;
 import org.springframework.stereotype.Service;
 
 import java.nio.file.Path;
+import java.util.Base64;
 
 import static filegdbwebbuilder.fileoutput.FileOutputUtils.createUniqueTempDirectory;
 
@@ -37,7 +39,7 @@ public class FileGDBTemplateGeneratorService {
 
         fileTemplateDataSource.delete();
 
-        return FileGDBTemplateResult.builder().build();
+        return FileGDBTemplateResult.builder().templateBase64(encodeOutputFileTemplateToBase64(outputFilePath)).build();
 
     }
 
@@ -80,5 +82,15 @@ public class FileGDBTemplateGeneratorService {
         }
     }
 
+    //TODO add to utils class
+    private String encodeOutputFileTemplateToBase64(final String outputFilePath) {
+        try {
+            byte[] outputFileByteArray = FileUtils.readFileToByteArray(Path.of(outputFilePath).toFile());
+            return Base64.getEncoder().encodeToString(outputFileByteArray);
+        } catch (Exception e) {
+            throw new FileGDBTemplateServiceException("Error when reading template file to byte array...", e);
+        }
+
+    }
 
 }
