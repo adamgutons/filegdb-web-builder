@@ -5,7 +5,6 @@ import filegdbwebbuilder.entities.FeatureLayer;
 import filegdbwebbuilder.entities.FileGDBTemplate;
 import filegdbwebbuilder.entities.FileGDBTemplateResult;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.FileUtils;
 import org.gdal.ogr.DataSource;
 import org.gdal.ogr.FieldDefn;
 import org.gdal.ogr.Layer;
@@ -13,10 +12,11 @@ import org.gdal.ogr.ogr;
 import org.gdal.osr.SpatialReference;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
 import java.nio.file.Path;
-import java.util.Base64;
+import java.util.List;
 
-import static filegdbwebbuilder.fileoutput.FileOutputUtils.createUniqueTempDirectory;
+import static filegdbwebbuilder.fileoutput.FileOutputUtils.*;
 
 @Slf4j
 @Service
@@ -29,9 +29,9 @@ public class FileGDBTemplateGeneratorService {
 
         ogr.RegisterAll();
 
-        final String outputFilePath = Path.of(createUniqueTempDirectory().toString(), TEMPLATE_NAME).toString();
+        final Path outputFilePath = Path.of(createUniqueTempDirectory().toString(), TEMPLATE_NAME);
         final DataSource fileTemplateDataSource =
-                ogr.GetDriverByName(FILE_DRIVER).CreateDataSource(outputFilePath);
+                ogr.GetDriverByName(FILE_DRIVER).CreateDataSource(outputFilePath.toString());
         log.info("Data source created...");
 
         createOgrLayerObjects(fileGDBTemplateConfiguration, fileTemplateDataSource, createSpatialReference(fileGDBTemplateConfiguration));
@@ -39,8 +39,14 @@ public class FileGDBTemplateGeneratorService {
 
         fileTemplateDataSource.delete();
 
-        return FileGDBTemplateResult.builder().templateBase64(encodeOutputFileTemplateToBase64(outputFilePath)).build();
-
+        try {
+            final File zippedOutputFile = zipFiles(List.of(outputFilePath.toFile()), outputFilePath.getParent(),
+                    fileGDBTemplateConfiguration.getTemplateName() + ".zip");
+            return FileGDBTemplateResult.builder()
+                    .templateBase64(encodeOutputFileTemplateToBase64(zippedOutputFile.getPath())).build();
+        } catch (Exception e) {
+            throw new FileGDBTemplateServiceException("Unable to zip template file...", e);
+        }
     }
 
     private SpatialReference createSpatialReference(final FileGDBTemplate fileGDBTemplateConfiguration) {
@@ -80,17 +86,6 @@ public class FileGDBTemplateGeneratorService {
         } catch (Exception e) {
             throw new FileGDBTemplateServiceException("Error when creating ogr field objects", e);
         }
-    }
-
-    //TODO add to utils class
-    private String encodeOutputFileTemplateToBase64(final String outputFilePath) {
-        try {
-            byte[] outputFileByteArray = FileUtils.readFileToByteArray(Path.of(outputFilePath).toFile());
-            return Base64.getEncoder().encodeToString(outputFileByteArray);
-        } catch (Exception e) {
-            throw new FileGDBTemplateServiceException("Error when reading template file to byte array...", e);
-        }
-
     }
 
 }

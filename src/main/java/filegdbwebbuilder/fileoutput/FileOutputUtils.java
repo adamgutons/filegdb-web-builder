@@ -1,6 +1,7 @@
 package filegdbwebbuilder.fileoutput;
 
 
+import filegdbwebbuilder.api.exception.FileGDBTemplateServiceException;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.io.FileUtils;
 
@@ -12,6 +13,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
+import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -22,7 +24,7 @@ import java.util.zip.ZipOutputStream;
 @UtilityClass
 public class FileOutputUtils {
 
-    public static String generateUniqueTempDirectoryName() {
+    private static String generateUniqueTempDirectoryName() {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd_HHmmss");
         String timestamp = dateFormat.format(new Date());
         String randomUUID = UUID.randomUUID().toString();
@@ -52,7 +54,7 @@ public class FileOutputUtils {
         }
     }
 
-    public static File createFile(Path outputFolder, String fileName) throws IOException {
+    private static File createFile(Path outputFolder, String fileName) throws IOException {
         return Files.createFile(outputFolder.resolve(fileName)).toFile();
     }
 
@@ -98,6 +100,16 @@ public class FileOutputUtils {
             fis.transferTo(zipOut);
             zipOut.closeEntry();
         }
+    }
+
+    public String encodeOutputFileTemplateToBase64(final String outputFilePath) {
+        try {
+            byte[] outputFileByteArray = FileUtils.readFileToByteArray(Path.of(outputFilePath).toFile());
+            return Base64.getEncoder().encodeToString(outputFileByteArray);
+        } catch (Exception e) {
+            throw new FileGDBTemplateServiceException("Error when reading template file to byte array...", e);
+        }
+
     }
 
 }
