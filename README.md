@@ -17,7 +17,7 @@
   + A small example request might look like this:
     + ```
       {
-        "name": "templateTester", -- output file template name
+        "name": "template", -- output file template name
         "featureLayers": [        -- list of feature layers
           {
             "name": "test",       -- name of each layer
@@ -35,6 +35,18 @@
       ```
  + The response contains a base64 encoded string that represents a .zip file containing the file geodatabase template
    + `{ "templateBase64": "UEsDBBQACAgIAIiNP1gAAAA..." }`
+   
+
+ + Extract the output with some other function:
+   + ```
+     def decode_base64_and_extract_zip(encoded_string, output_path='output'):
+       decoded_bytes = base64.b64decode(encoded_string)
+       with zipfile.ZipFile(io.BytesIO(decoded_bytes), 'r') as zip_ref:
+         zip_ref.extractall(output_path)
+     ```
+     ![example](example.PNG)
+   
+     *Viewing in QGIS browser*
    
 #### spatial references
 + As of now the spatial reference system must be defined with an official [EPSG](https://epsg.io/) code
